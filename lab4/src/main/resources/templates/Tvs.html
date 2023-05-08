@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Tvs</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            text-align: left;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h2>Search by Id:</h2>
+    <input type="text" id="searchInput" onkeyup="searchById()" placeholder="Enter Id...">
+    <h2>Search by Model:</h2>
+    <input type="text" id="searchByModelInput" onkeyup="searchByModel()" placeholder="Enter Model...">
+</div>
+<div th:switch="${tv}">
+    <h2 th:case="null">No info found</h2>
+    <div th:case="*">
+        <h2>Tvs
+            <button onclick="sortDescending()">Отсортировать по цене (возростание)</button>
+        </h2>
+        <table id="TvTable">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Model</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tv : ${tv}">
+                <td th:text="${tv.id}"></td>
+                <td th:text="${tv.model}"></td>
+                <td th:text="${tv.name}"></td>
+                <td th:text="${tv.price}"></td>
+                <td><a th:href="@{tv-update/{id}(id=${tv.id})}">Edit</a></td>
+                <td><a th:href="@{tv-delete/{id}(id=${tv.id})}">Delete</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p><a href="/tv-create">Add new tv</a></p>
+    <li><a th:href="@{/}">Back</a></li>
+</div>
+<script>
+    function searchByModel() {
+        let input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchByModelInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("TvTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    function sortDescending() {
+        let table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("TvTable");
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[3];
+                y = rows[i + 1].getElementsByTagName("TD")[3];
+                if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
+
+    function searchById() {
+        let input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("TvTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
